@@ -21,33 +21,24 @@ const NewTask = () => {
   const [errors, setErrors] = useState({});
 
   const getTask = async () => {
-    try {
-      const res = await fetch(`/api/tasks/${params.id}`);
-      if (!res.ok) {
-        console.error("Failed to fetch task:", res.statusText);
-        return;
-      }
-      const data = await res.json();
-      setNewTask(data);
-    } catch (error) {
-      console.error("Error fetching task:", error);
-    }
+    const res = await fetch(`/api/tasks/${params.id}`);
+    const data = await res.json();
+    setNewTask({
+      title: data.title,
+      description: data.description,
+      priority: data.priority,
+      status: data.status,
+      dueDate: data.dueDate,
+      assignedTo: data.assignedTo,
+      tags: data.tags
+    });
   };
 
-
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (params.id) {
-          await getTask();
-        }
-      } catch (error) {
-        console.error("Error fetching task:", error);
-      }
-    };
-
-    fetchData();
-  }, [params.id]);
+    if (params.id) {
+      getTask();
+    }
+  }, []);
 
 
   const handleSubmit = async (e) => {
@@ -67,13 +58,8 @@ const NewTask = () => {
     router.push("/");
   };
 
-  const handleChange = (e) => {
-    setNewTask((prevTask) => ({
-      ...prevTask,
-      [e.target.name]: e.target.value,
-    }));
-  };
-
+  const handleChange = (e) =>
+    setNewTask({ ...newTask, [e.target.name]: e.target.value });
 
   const validate = () => {
     let errors = {};
@@ -84,33 +70,43 @@ const NewTask = () => {
     if (!newTask.description) {
       errors.description = "Description is required";
     }
+    if (!newTask.priority) {
+      errors.priority = "priority is required";
+    }
+    if (!newTask.status) {
+      errors.status = "status is required";
+    }
+    if (!newTask.dueDate) {
+      errors.dueDate = "dueDate is required";
+    }
+    if (!newTask.assignedTo) {
+      errors.assignedTo = "assignedTo is required";
+    }
+    if (!newTask.tags) {
+      errors.tags = "tags is required";
+    }
 
     return errors;
   };
 
   const createTask = async () => {
     try {
-      const response = await fetch("/api/tasks", {
+      await fetch("/api/tasks", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(newTask),
       });
-
-      if (!response.ok) {
-        console.error("Failed to create task:", response.statusText);
-        return;
-      }
-
       router.push("/");
+      router.refresh();
     } catch (error) {
-      console.error("Error creating task:", error);
+      console.error(error);
     }
   };
 
   const handleDelete = async () => {
-    if (window.confirm(`Are you sure you want to delete the task "${newTask.title}"?`)) {
+    if (window.confirm("Are you sure you want to delete this task?")) {
       try {
         const res = await fetch(`/api/tasks/${params.id}`, {
           method: "DELETE",

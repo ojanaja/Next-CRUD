@@ -3,7 +3,7 @@ import { dbConnect } from "@/utils/mongoose";
 import { NextResponse } from "next/server";
 
 export async function GET(request, { params }) {
-  dbConnect();
+  await dbConnect();
   try {
     const taskFound = await Task.findById(params.id);
 
@@ -27,7 +27,7 @@ export async function GET(request, { params }) {
 
 export async function PUT(request, { params }) {
   const body = await request.json();
-  dbConnect();
+  await dbConnect();
 
   try {
     const taskUpdated = await Task.findByIdAndUpdate(params.id, body, {
@@ -53,7 +53,7 @@ export async function PUT(request, { params }) {
 }
 
 export async function DELETE(request, { params }) {
-  dbConnect();
+  await dbConnect();
 
   try {
     const taskDeleted = await Task.findByIdAndDelete(params.id);
