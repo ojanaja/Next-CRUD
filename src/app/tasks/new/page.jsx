@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 
@@ -6,23 +7,18 @@ const NewTask = () => {
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
-    priority: "medium", // default value for priority
-    status: "pending", // default value for status
-    dueDate: "", // you may want to use a date picker for this
+    priority: "medium",
+    status: "pending",
+    dueDate: "",
     assignedTo: "",
     tags: [],
   });
+
   const params = useParams();
   const router = useRouter();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
-
-  // const getTask = async () => {
-  //   const res = await fetch(`/api/tasks/${params.id}`);
-  //   const data = await res.json();
-  //   setNewTask({ title: data.title, description: data.description });
-  // };
 
   const getTask = async () => {
     try {
@@ -32,34 +28,14 @@ const NewTask = () => {
         return;
       }
       const data = await res.json();
-
-      // Set all properties of newTask with the data from the API
       setNewTask(data);
     } catch (error) {
       console.error("Error fetching task:", error);
-      // Handle the error (e.g., show a user-friendly message)
     }
   };
 
 
   useEffect(() => {
-    const getTask = async () => {
-      try {
-        const res = await fetch(`/api/tasks/${params.id}`);
-        if (!res.ok) {
-          console.error("Failed to fetch task:", res.statusText);
-          return;
-        }
-        const data = await res.json();
-
-        // Set all properties of newTask with the data from the API
-        setNewTask(data);
-      } catch (error) {
-        console.error("Error fetching task:", error);
-        // Handle the error (e.g., show a user-friendly message)
-      }
-    };
-
     const fetchData = async () => {
       try {
         if (params.id) {
@@ -67,13 +43,11 @@ const NewTask = () => {
         }
       } catch (error) {
         console.error("Error fetching task:", error);
-        // Handle the error (e.g., show a user-friendly message)
       }
     };
 
     fetchData();
   }, [params.id]);
-
 
 
   const handleSubmit = async (e) => {
@@ -233,7 +207,7 @@ const NewTask = () => {
           <input
             type="date"
             name="dueDate"
-            value={newTask.dueDate}
+            value={newTask.dueDate.slice(0, 10)}
             onChange={handleChange}
             className="bg-gray-800 border-2 w-full p-2 rounded-lg"
           />
